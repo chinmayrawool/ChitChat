@@ -6,4 +6,7 @@
     <string name="or_sign_up">Or, Sign Up</string>
     <string name="first_name">First Name</string>
     <string name="sign_up">Sign Up</string>
+    <string name="logout">logout</string>
+    <string name="add_more">Add More</string>
+    <string name="refresh">Refresh</string>
 </resources>
