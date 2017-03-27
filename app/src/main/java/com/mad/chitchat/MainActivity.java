@@ -78,33 +78,9 @@ public class MainActivity extends AppCompatActivity {
                             // Log.d("demo", response.body().string());
                             String jsonString = response.body().string();
                             SignupObject signup = SignUpUtil.SignUpJSONParser.parseHours(jsonString);
-                            if (signup.getStatus().equals("error")) {
-                                MainActivity.this.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //Handle UI here
-                                        Toast.makeText(MainActivity.this, "Incorrect Email/Password ", Toast.LENGTH_SHORT).show();
 
-                                    }
-                                });
-
-                            } else {
-                                tokenR[0] = signup.getToken();
-                                SharedPreference sp = new SharedPreference();
-                                sp.addToken(MainActivity.this, tokenR[0]);
-                                MainActivity.this.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //Handle UI here
-                                        Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                                        Intent i = new Intent(MainActivity.this, ChatActivity.class);
-                                        startActivity(i);
-                                        finish();
-
-                                    }
-                                }
-                            }
-                             });
+                        }
+                    });
                 }
             });
 
