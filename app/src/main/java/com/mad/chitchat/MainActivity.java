@@ -6,6 +6,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+
 /*
 * Login and Sign up activity
 *
@@ -29,14 +34,33 @@ public class MainActivity extends AppCompatActivity {
         String token = sp.loadToken(this);
         if (token != null) {
             if (!token.equals("notoken")) {
-                Intent i = new Intent(MainActivity.this, ChatActivity.class);
-                startActivity(i);
+                //Intent i = new Intent(MainActivity.this, ChatActivity.class);
+               // startActivity(i);
             }
         }
         else
         {
-            final EditText email = (EditText) findViewById(R.id.editTextEmailSignUp);
-            final EditText password = (EditText) findViewById(R.id.editTextPasswordSignup);
+            final EditText emailLogin = (EditText) findViewById(R.id.login_email);
+            final EditText passwordLogin = (EditText) findViewById(R.id.login_password);
+
+
+            findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    OkHttpClient client = new OkHttpClient();
+                    RequestBody formBody = new FormBody.Builder()
+                            .add("email", emailLogin.getText().toString())
+                            .add("password", passwordLogin.getText().toString())
+                            .build();
+
+
+                    Request request = new Request.Builder()
+                            .url("http://52.90.79.130:8080/Groups/api/login")
+                            .post(formBody)
+                            .build();
+                }
+            });
+
         }
     }
 }
