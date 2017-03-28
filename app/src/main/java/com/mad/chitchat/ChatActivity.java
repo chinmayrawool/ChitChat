@@ -7,8 +7,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class ChatActivity extends AppCompatActivity {
     ArrayList<Message> messages;
@@ -21,6 +27,20 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.chit_chat);
 
+
+        for(int i=0; i<messages.size();i++){
+            if(messages.get(i).getUserEmail()==userEmail){
+                LinearLayout linear = new LinearLayout(this);
+                TextView tv = new TextView(this);
+                tv.setText(messages.get(i).getUserFname()+" "+messages.get(i).getUserLname());
+                TextView tv1 = new TextView(this);
+                tv1.setText(messages.get(i).getText());
+                Long time = System.currentTimeMillis();
+                String timeFormat = new PrettyTime(new Locale("")).format(new Date(time)))
+                TextView tv2 = new TextView(this);
+                tv2.setText();
+            }
+        }
 
 
     }
