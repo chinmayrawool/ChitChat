@@ -82,6 +82,7 @@ public class SubscribeAllActivity extends AppCompatActivity {
                             for(int j=0; j<SubAlllist.size();j++) {
                                 ChannelClass channel1 = SubAlllist.get(j);
                                 if(channel.getChannelId()==channel1.getChannelId()) {
+                                    //channel.setFlagButton();
                                     SubAlllist.set(j, channel);
                                 }
                             }

@@ -69,6 +69,8 @@ public class ListAdapter extends ArrayAdapter<ChannelClass> {
             @Override
             public void onClick(View view) {
                 if(object.isFlagButton()){
+                    btn_view.setText("View");
+                    object.setFlagButton(false);
                     SharedPreference sp = new SharedPreference();
                     String token = sp.loadToken(mContext);
                     OkHttpClient client = new OkHttpClient();
@@ -110,8 +112,7 @@ public class ListAdapter extends ArrayAdapter<ChannelClass> {
                         }
                     });
 
-                    btn_view.setText("View");
-                    object.setFlagButton(false);
+
 
 
                 }else{
