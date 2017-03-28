@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarMain);
+        toolbar.setTitle(R.string.chit_chat);
         setSupportActionBar(toolbar);
         final String[] tokenR = {null};
         findViewById(R.id.btn_signup).setOnClickListener(new View.OnClickListener() {
@@ -45,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
         String token = sp.loadToken(this);
         if (token != null) {
             if (!token.equals("notoken")) {
-                //Intent i = new Intent(MainActivity.this, ChatActivity.class);
-               // startActivity(i);
+                Intent i = new Intent(MainActivity.this, ChatActivity.class);
+                startActivity(i);
             }
         }
         else
@@ -102,6 +103,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        return false;
     }
 }

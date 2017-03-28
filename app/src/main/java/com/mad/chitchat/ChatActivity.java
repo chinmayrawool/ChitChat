@@ -16,6 +16,7 @@ public class ChatActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarChat);
         setSupportActionBar(toolbar);
+        toolbar.setTitle(R.string.chit_chat);
     }
 
     @Override

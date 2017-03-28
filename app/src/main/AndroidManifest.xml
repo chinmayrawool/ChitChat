@@ -16,7 +16,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".SubscribeActivity" />
-        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".ChatActivity" />
+        <activity android:name=".SubscribeAllActivity"></activity>
     </application>
 
 </manifest>

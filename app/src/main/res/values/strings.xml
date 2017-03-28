@@ -9,4 +9,7 @@
     <string name="logout">logout</string>
     <string name="add_more">Add More</string>
     <string name="refresh">Refresh</string>
+    <string name="your_subscribed_channels">Your Subscribed Channels:</string>
+    <string name="view">View</string>
+    <string name="chit_chat">Chit Chat</string>
 </resources>
