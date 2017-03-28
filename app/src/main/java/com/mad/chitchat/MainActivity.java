@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -86,7 +89,16 @@ public class MainActivity extends AppCompatActivity {
                             public void onResponse(Call call, Response response) throws IOException {
                                 StringBuilder sb = null;
                                 // Log.d("demo", response.body().string());
+
                                 String jsonString = response.body().string();
+                                try {
+                                    JSONObject root = new JSONObject(jsonString);
+                                    String status = root.getString("status");
+
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                                 SignupObject signup = SignUpUtil.SignUpJSONParser.parseHours(jsonString);
                                 if (signup.getStatus().equals("0")) {
                                     MainActivity.this.runOnUiThread(new Runnable() {
@@ -107,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                                         public void run() {
                                             //Handle UI here
                                             Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                                            Intent i = new Intent(MainActivity.this, ChatActivity.class);
+                                            Intent i = new Intent(MainActivity.this, SubscribeActivity.class);
                                             startActivity(i);
                                             finish();
 
@@ -172,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     //Handle UI here
                                     Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                                    Intent i = new Intent(MainActivity.this, ChatActivity.class);
+                                    Intent i = new Intent(MainActivity.this, SubscribeActivity.class);
                                     startActivity(i);
                                     finish();
 

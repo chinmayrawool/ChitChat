@@ -6,7 +6,24 @@ package com.mad.chitchat;
 
 public class ChannelClass {
     int channelId;
-    String channelName;
+    String channelName,email;
+
+    public int getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(int channelId) {
+        this.channelId = channelId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     boolean flagButton=false;//false= view and true=Join
 
     public String getChannelName() {
