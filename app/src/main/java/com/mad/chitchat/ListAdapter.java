@@ -1,6 +1,7 @@
 package com.mad.chitchat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,7 @@ public class ListAdapter extends ArrayAdapter<ChannelClass> {
         object = mData.get(position);
         TextView tv_title = (TextView) convertView.findViewById(R.id.row_title);
         tv_title.setText(object.getChannelName()+"");
-        Button btn_view = (Button) convertView.findViewById(R.id.row_btn_view);
+        final Button btn_view = (Button) convertView.findViewById(R.id.row_btn_view);
         if(object.isFlagButton()){
             btn_view.setText("Join");
         }else{
@@ -53,7 +54,15 @@ public class ListAdapter extends ArrayAdapter<ChannelClass> {
         btn_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(object.isFlagButton()){
+                    btn_view.setText("View");
+                    object.setFlagButton(false);
 
+
+                }else{
+                    Intent intent = new Intent(mContext,ChatActivity.class);
+                    mContext.startActivity(intent);
+                }
             }
         });
         convertView.setClickable(true);

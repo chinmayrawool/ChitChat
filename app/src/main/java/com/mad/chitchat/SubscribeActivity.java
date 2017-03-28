@@ -39,6 +39,7 @@ public class SubscribeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(SubscribeActivity.this,SubscribeAllActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
     }
