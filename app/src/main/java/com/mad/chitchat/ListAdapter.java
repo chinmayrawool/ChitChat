@@ -3,6 +3,7 @@ package com.mad.chitchat;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,22 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by Chinmay Rawool on 3/20/2017.
@@ -55,6 +69,47 @@ public class ListAdapter extends ArrayAdapter<ChannelClass> {
             @Override
             public void onClick(View view) {
                 if(object.isFlagButton()){
+                    SharedPreference sp = new SharedPreference();
+                    String token = sp.loadToken(mContext);
+                    OkHttpClient client = new OkHttpClient();
+                    RequestBody formBody = new FormBody.Builder()
+                            .add("channel_id", String.valueOf(object.getChannelId()))
+                            .build();
+
+                    Request request = new Request.Builder()
+                            .url("http://52.90.79.130:8080/Groups/api/subscribe/channel")
+                            .addHeader("Authorization", "BEARER "+token)
+                            .header("Content-Type","application/x-www-form-urlencoded")
+                            .post(formBody)
+                            .build();
+
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+
+                            // Log.d("demo", response.body().string());
+                            String jsonString = response.body().string();
+                            try {
+                                JSONObject root = new JSONObject(jsonString);
+                                String status = root.getString("status");
+                                if (status.equals("0")) {
+                                    //Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
+                                    Log.d("demo","Channel not subscribed");
+                                }else{
+                                    Log.d("demo","Channel subscribed");
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+
                     btn_view.setText("View");
                     object.setFlagButton(false);
 

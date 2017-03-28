@@ -27,26 +27,122 @@ import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ChatActivity extends AppCompatActivity {
     ArrayList<Message> messages;
+    String token, id, email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        final EditText et = (EditText) findViewById(R.id.et1);
         messages = new ArrayList<>();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarChat);
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.chit_chat);
 
-        String id = getIntent().getExtras().getString("Channel id");
-        final String email = getIntent().getExtras().getString("Email");
+        id = String.valueOf(getIntent().getExtras().getString("Channel id"));
+        email = getIntent().getExtras().getString("Email");
 
         SharedPreference sp = new SharedPreference();
-        String token = sp.loadToken(this);
+        token = sp.loadToken(this);
+        //call function
+        getMessages();
+
+
+        findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String message = et.getText().toString();
+                Long time = System.currentTimeMillis();
+
+                OkHttpClient client = new OkHttpClient();
+                RequestBody formBody = new FormBody.Builder()
+                        .add("msg_text", message.trim())
+                        .add("msg_time", String.valueOf(time))
+                        .add("channel_id", id)
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url("http://52.90.79.130:8080/Groups/api/post/message")
+                        .addHeader("Authorization", "BEARER "+token)
+                        .header("Content-Type","application/x-www-form-urlencoded")
+                        .post(formBody)
+                        .build();
+
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        ChatActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ChatActivity.this, "failed", Toast.LENGTH_SHORT).show();
+                            }});
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                        // Log.d("demo", response.body().string());
+                        String jsonString = response.body().string();
+                        try {
+                            JSONObject root = new JSONObject(jsonString);
+                            String status = root.getString("status");
+                            if (status.equals("0")) {
+                                ChatActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //Handle UI here
+                                        Toast.makeText(ChatActivity.this, "User not subscribed to channel", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
+
+                            }else{
+                                getMessages();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+
+
+                //get token from sp
+            }
+        });
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.my_menu_chat, menu);
+        return true;
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_logout) {
+
+        }else if(item.getItemId() == R.id.action_refresh){
+            finish();
+            Intent intent = new Intent(ChatActivity.this,ChatActivity.class);
+            startActivity(intent);
+        }
+        return true;
+    }
+
+    public void getMessages(){
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url("http://52.90.79.130:8080/Groups/api/get/messages?channel_id="+id)
@@ -82,6 +178,7 @@ public class ChatActivity extends AppCompatActivity {
                         });
 
                     }else{
+                        messages = null;
                         messages = GetMessagesUtil.MessageJSONParser.parseMessages(jsonString);
 
                         ChatActivity.this.runOnUiThread(new Runnable() {
@@ -89,8 +186,9 @@ public class ChatActivity extends AppCompatActivity {
                             public void run() {
                                 //Handle UI here
                                 LinearLayout l1 = (LinearLayout) findViewById(R.id.linearChat);
+                                l1.removeAllViews();
                                 for(int i=0; i<messages.size();i++){
-                                    if(messages.get(i).getUserEmail()==email){
+                                    if(messages.get(i).getUserEmail().equals(email)){
                                         LinearLayout linear = new LinearLayout(ChatActivity.this);
                                         LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(1000, ViewGroup.LayoutParams.WRAP_CONTENT);
                                         params.gravity = Gravity.RIGHT;
@@ -135,41 +233,5 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
-
-
-        findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EditText et = (EditText) findViewById(R.id.et_message);
-                String message = et.getText().toString();
-                Long time = System.currentTimeMillis();
-
-
-                //get token from sp
-            }
-        });
-
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.my_menu_chat, menu);
-        return true;
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_logout) {
-
-        }else if(item.getItemId() == R.id.action_refresh){
-            finish();
-            Intent intent = new Intent(ChatActivity.this,ChatActivity.class);
-            startActivity(intent);
-        }
-        return true;
     }
 }
