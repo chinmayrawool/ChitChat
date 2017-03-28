@@ -12,13 +12,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class ChatActivity extends AppCompatActivity {
     ArrayList<Message> messages;
@@ -31,44 +42,101 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.chit_chat);
 
-        LinearLayout l1 = (LinearLayout) findViewById(R.id.linearChat);
-        for(int i=0; i<messages.size();i++){
-            if(messages.get(i).getUserEmail()==userEmail){
-                LinearLayout linear = new LinearLayout(this);
-                LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(1000, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.gravity = Gravity.RIGHT;
-                linear.setLayoutParams(params);
-                TextView tv = new TextView(this);
-                tv.setText(messages.get(i).getUserFname()+" "+messages.get(i).getUserLname());
-                TextView tv1 = new TextView(this);
-                tv1.setText(messages.get(i).getText());
-                Long time = messages.get(i).getTime();
-                String timeFormat = new PrettyTime(new Locale("")).format(new Date(time));
-                TextView tv2 = new TextView(this);
-                tv2.setText("Posted on " + timeFormat);
-                linear.addView(tv);
-                linear.addView(tv1);
-                linear.addView(tv2);
-                l1.addView(linear);
-            }else{
-                LinearLayout linear = new LinearLayout(this);
-                LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(1000, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.gravity = Gravity.LEFT;
-                linear.setLayoutParams(params);
-                TextView tv = new TextView(this);
-                tv.setText(messages.get(i).getUserFname()+" "+messages.get(i).getUserLname());
-                TextView tv1 = new TextView(this);
-                tv1.setText(messages.get(i).getText());
-                Long time = messages.get(i).getTime();
-                String timeFormat = new PrettyTime(new Locale("")).format(new Date(time));
-                TextView tv2 = new TextView(this);
-                tv2.setText("Posted on " + timeFormat);
-                linear.addView(tv);
-                linear.addView(tv1);
-                linear.addView(tv2);
-                l1.addView(linear);
+        String id = getIntent().getExtras().getString("Channel id");
+        final String email = getIntent().getExtras().getString("Email");
+
+        SharedPreference sp = new SharedPreference();
+        String token = sp.loadToken(this);
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("http://52.90.79.130:8080/Groups/api/get/messages?channel_id="+id)
+                .addHeader("Authorization", "BEARER "+token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                ChatActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ChatActivity.this, "failed", Toast.LENGTH_SHORT).show();
+                    }});
             }
-        }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                StringBuilder sb = null;
+                // Log.d("demo", response.body().string());
+                String jsonString = response.body().string();
+                try {
+                    JSONObject root = new JSONObject(jsonString);
+                    String status = root.getString("status");
+                    if (status.equals("0")) {
+                        ChatActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //Handle UI here
+                                Toast.makeText(ChatActivity.this, "Error retrieving data for user", Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+
+                    }else{
+                        messages = GetMessagesUtil.MessageJSONParser.parseMessages(jsonString);
+
+                        ChatActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //Handle UI here
+                                LinearLayout l1 = (LinearLayout) findViewById(R.id.linearChat);
+                                for(int i=0; i<messages.size();i++){
+                                    if(messages.get(i).getUserEmail()==email){
+                                        LinearLayout linear = new LinearLayout(ChatActivity.this);
+                                        LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(1000, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                        params.gravity = Gravity.RIGHT;
+                                        linear.setLayoutParams(params);
+                                        TextView tv = new TextView(ChatActivity.this);
+                                        tv.setText(messages.get(i).getUserFname()+" "+messages.get(i).getUserLname());
+                                        TextView tv1 = new TextView(ChatActivity.this);
+                                        tv1.setText(messages.get(i).getText());
+                                        Long time = messages.get(i).getTime();
+                                        String timeFormat = new PrettyTime(new Locale("")).format(new Date(time));
+                                        TextView tv2 = new TextView(ChatActivity.this);
+                                        tv2.setText("Posted on " + timeFormat);
+                                        linear.addView(tv);
+                                        linear.addView(tv1);
+                                        linear.addView(tv2);
+                                        l1.addView(linear);
+                                    }else{
+                                        LinearLayout linear = new LinearLayout(ChatActivity.this);
+                                        LinearLayout.LayoutParams params= new LinearLayout.LayoutParams(1000, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                        params.gravity = Gravity.LEFT;
+                                        linear.setLayoutParams(params);
+                                        TextView tv = new TextView(ChatActivity.this);
+                                        tv.setText(messages.get(i).getUserFname()+" "+messages.get(i).getUserLname());
+                                        TextView tv1 = new TextView(ChatActivity.this);
+                                        tv1.setText(messages.get(i).getText());
+                                        Long time = messages.get(i).getTime();
+                                        String timeFormat = new PrettyTime(new Locale("")).format(new Date(time));
+                                        TextView tv2 = new TextView(ChatActivity.this);
+                                        tv2.setText("Posted on " + timeFormat);
+                                        linear.addView(tv);
+                                        linear.addView(tv1);
+                                        linear.addView(tv2);
+                                        l1.addView(linear);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+
 
         findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +144,8 @@ public class ChatActivity extends AppCompatActivity {
                 EditText et = (EditText) findViewById(R.id.et_message);
                 String message = et.getText().toString();
                 Long time = System.currentTimeMillis();
+
+
                 //get token from sp
             }
         });

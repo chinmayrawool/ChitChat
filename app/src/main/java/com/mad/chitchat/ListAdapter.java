@@ -61,6 +61,8 @@ public class ListAdapter extends ArrayAdapter<ChannelClass> {
 
                 }else{
                     Intent intent = new Intent(mContext,ChatActivity.class);
+                    intent.putExtra("Channel id",object.getChannelId());
+                    intent.putExtra("Email",object.getEmail());
                     mContext.startActivity(intent);
                 }
             }
