@@ -28,8 +28,9 @@ public class SignupObject {
     static public SignupObject createSignupObject(JSONObject js) throws JSONException {
         SignupObject signup = new SignupObject();
         signup.setStatus(js.getString("status"));
-        if(signup.getStatus().equals("ok"))
-        {        signup.setToken(js.getString("token"));}
+        if(signup.getStatus().equals("1"))
+        {        signup.setToken(js.getString("data"));
+        }
 
         return signup;
 

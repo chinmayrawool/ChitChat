@@ -34,13 +34,16 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarMain);
         toolbar.setTitle(R.string.chit_chat);
         setSupportActionBar(toolbar);
+
         final String[] tokenR = {null};
-        findViewById(R.id.btn_signup).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Sign up code
-            }
-        });
+
+        final EditText emailSignup = (EditText) findViewById(R.id.signup_email);
+        final EditText passwordSignup = (EditText) findViewById(R.id.signup_password);
+        final EditText fnameSignup = (EditText) findViewById(R.id.signup_fname);
+        final EditText lnameSignup = (EditText) findViewById(R.id.signup_lname);
+
+        final EditText emailLogin = (EditText) findViewById(R.id.login_email);
+        final EditText passwordLogin = (EditText) findViewById(R.id.login_password);
 
         SharedPreference sp = new SharedPreference();
         String token = sp.loadToken(this);
@@ -50,47 +53,142 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         }
-        else
-        {
-            final EditText emailLogin = (EditText) findViewById(R.id.login_email);
-            final EditText passwordLogin = (EditText) findViewById(R.id.login_password);
+
+                findViewById(R.id.btn_signup).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        OkHttpClient client = new OkHttpClient();
+                        RequestBody formBody = new FormBody.Builder()
+                                .add("email", emailSignup.getText().toString())
+                                .add("password", passwordSignup.getText().toString())
+                                .add("fname", fnameSignup.getText().toString())
+                                .add("lname", lnameSignup.getText().toString())
+                                .build();
 
 
-            findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    OkHttpClient client = new OkHttpClient();
-                    RequestBody formBody = new FormBody.Builder()
-                            .add("email", emailLogin.getText().toString())
-                            .add("password", passwordLogin.getText().toString())
-                            .build();
+                        Request request = new Request.Builder()
+                                .url("http://52.90.79.130:8080/Groups/api/signUp")
+                                .post(formBody)
+                                .build();
 
 
-                    Request request = new Request.Builder()
-                            .url("http://52.90.79.130:8080/Groups/api/login")
-                            .post(formBody)
-                            .build();
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MainActivity.this, "Signup failed", Toast.LENGTH_SHORT).show();
+                                    }});
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                StringBuilder sb = null;
+                                // Log.d("demo", response.body().string());
+                                String jsonString = response.body().string();
+                                SignupObject signup = SignUpUtil.SignUpJSONParser.parseHours(jsonString);
+                                if (signup.getStatus().equals("0")) {
+                                    MainActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //Handle UI here
+                                            Toast.makeText(MainActivity.this, "Registration Unsuccessful", Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    });
+
+                                }else{
+                                    tokenR[0] = signup.getToken();
+                                    SharedPreference sp = new SharedPreference();
+                                    sp.addToken(MainActivity.this, tokenR[0]);
+                                    MainActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //Handle UI here
+                                            Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
+                                            Intent i = new Intent(MainActivity.this, ChatActivity.class);
+                                            startActivity(i);
+                                            finish();
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
 
 
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            Toast.makeText(MainActivity.this, "Incorrect Email/Password ", Toast.LENGTH_SHORT).show();
+        findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OkHttpClient client = new OkHttpClient();
+                RequestBody formBody = new FormBody.Builder()
+                        .add("email", emailLogin.getText().toString())
+                        .add("password", passwordLogin.getText().toString())
+                        .build();
+
+
+                Request request = new Request.Builder()
+                        .url("http://52.90.79.130:8080/Groups/api/login")
+                        .post(formBody)
+                        .build();
+
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                            }});
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+
+                        // Log.d("demo", response.body().string());
+                        String jsonString = response.body().string();
+                        SignupObject signup = SignUpUtil.SignUpJSONParser.parseHours(jsonString);
+                        if (signup.getStatus().equals("0")) {
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Handle UI here
+                                    Toast.makeText(MainActivity.this, "Login Unsuccessful", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+
+                        }else{
+                            tokenR[0] = signup.getToken();
+                            SharedPreference sp = new SharedPreference();
+                            sp.addToken(MainActivity.this, tokenR[0]);
+
+
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Handle UI here
+                                    Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
+                                    Intent i = new Intent(MainActivity.this, ChatActivity.class);
+                                    startActivity(i);
+                                    finish();
+
+                                }
+                            });
                         }
+                    }
+                });
+            }
+        });
 
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            StringBuilder sb = null;
-                            // Log.d("demo", response.body().string());
-                            String jsonString = response.body().string();
-                            SignupObject signup = SignUpUtil.SignUpJSONParser.parseHours(jsonString);
 
-                        }
-                    });
-                }
-            });
 
-        }
+
+
+
     }
 
     @Override
