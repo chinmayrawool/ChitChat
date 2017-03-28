@@ -36,7 +36,7 @@ public class ChatActivity extends AppCompatActivity {
                 TextView tv1 = new TextView(this);
                 tv1.setText(messages.get(i).getText());
                 Long time = System.currentTimeMillis();
-                String timeFormat = new PrettyTime(new Locale("")).format(new Date(time)))
+                String timeFormat = new PrettyTime(new Locale("")).format(new Date(time)));
                 TextView tv2 = new TextView(this);
                 tv2.setText();
             }

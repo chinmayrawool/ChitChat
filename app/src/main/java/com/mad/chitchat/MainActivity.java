@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         String token = sp.loadToken(this);
         if (token != null) {
             if (!token.equals("notoken")) {
-                Intent i = new Intent(MainActivity.this, ChatActivity.class);
+                Intent i = new Intent(MainActivity.this, SubscribeActivity.class);
                 startActivity(i);
             }
         }

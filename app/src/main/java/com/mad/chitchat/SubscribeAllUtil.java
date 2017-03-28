@@ -15,32 +15,59 @@ import java.util.ArrayList;
 public class SubscribeAllUtil {
 
     static public class SubscribeJSONParser {
-        static ArrayList<ChannelClass> parseChannels(String in) {
-            ArrayList<ChannelClass> list = new ArrayList<ChannelClass>();
-            try {
-                JSONObject root = new JSONObject(in);
-                //signupObject = SignupObject.createSignupObject(root);
-                //Log.d("each hour", signupObject.toString());
+        static ArrayList<ChannelClass> parseChannels(String in, boolean flag) {
+            if(flag) {
+                ArrayList<ChannelClass> list = new ArrayList<ChannelClass>();
+                try {
+                    JSONObject root = new JSONObject(in);
+                    //signupObject = SignupObject.createSignupObject(root);
+                    //Log.d("each hour", signupObject.toString());
 
-                JSONArray array = root.getJSONArray("data");
-                for(int i =0;i<array.length();i++){
-                    ChannelClass channelClass = new ChannelClass();
-                    JSONObject obj = array.getJSONObject(i);
-                    channelClass.setEmail(obj.getString("email"));
-                    JSONObject innerObj = obj.getJSONObject("channel");
-                    channelClass.setChannelId(Integer.parseInt(innerObj.getString("channel_id")));
-                    channelClass.setChannelName(innerObj.getString("channel_name"));
-                    channelClass.setFlagButton(false);
-                    list.add(channelClass);
+                    JSONArray array = root.getJSONArray("data");
+                    for (int i = 0; i < array.length(); i++) {
+                        ChannelClass channelClass = new ChannelClass();
+                        JSONObject obj = array.getJSONObject(i);
+
+                        channelClass.setChannelId(Integer.parseInt(obj.getString("channel_id")));
+                        channelClass.setChannelName(obj.getString("channel_name"));
+                        channelClass.setFlagButton(true);
+                        list.add(channelClass);
+                    }
+
+                } catch (JSONException e) {
+
+                    e.printStackTrace();
                 }
 
-            } catch (JSONException e) {
 
-                e.printStackTrace();
+                return list;
+            }else{
+                ArrayList<ChannelClass> list = new ArrayList<ChannelClass>();
+                try {
+                    JSONObject root = new JSONObject(in);
+                    //signupObject = SignupObject.createSignupObject(root);
+                    //Log.d("each hour", signupObject.toString());
+
+                    JSONArray array = root.getJSONArray("data");
+                    for (int i = 0; i < array.length(); i++) {
+                        ChannelClass channelClass = new ChannelClass();
+                        JSONObject obj = array.getJSONObject(i);
+                        channelClass.setEmail(obj.getString("email"));
+                        JSONObject innerObj = obj.getJSONObject("channel");
+                        channelClass.setChannelId(Integer.parseInt(innerObj.getString("channel_id")));
+                        channelClass.setChannelName(innerObj.getString("channel_name"));
+                        channelClass.setFlagButton(false);
+                        list.add(channelClass);
+                    }
+
+                } catch (JSONException e) {
+
+                    e.printStackTrace();
+                }
+
+
+                return list;
             }
-
-
-            return list;
         }
 
 

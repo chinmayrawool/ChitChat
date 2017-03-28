@@ -79,7 +79,7 @@ public class SubscribeActivity extends AppCompatActivity {
                         });
 
                     }else{
-                        list = SubscribeAllUtil.SubscribeJSONParser.parseChannels(jsonString);
+                        list = SubscribeAllUtil.SubscribeJSONParser.parseChannels(jsonString,false);
 
                         SubscribeActivity.this.runOnUiThread(new Runnable() {
                             @Override
@@ -108,6 +108,7 @@ public class SubscribeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SubscribeActivity.this,SubscribeAllActivity.class);
+                intent.putExtra("Subscribed list",list);
                 startActivity(intent);
                 finish();
             }

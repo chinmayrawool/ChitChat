@@ -1,10 +1,12 @@
 package com.mad.chitchat;
 
+import java.io.Serializable;
+
 /**
  * Created by Chinmay Rawool on 3/27/2017.
  */
 
-public class ChannelClass {
+public class ChannelClass implements Serializable{
     int channelId;
     String channelName,email;
 
