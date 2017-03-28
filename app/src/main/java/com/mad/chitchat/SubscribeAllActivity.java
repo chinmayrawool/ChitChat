@@ -79,7 +79,12 @@ public class SubscribeAllActivity extends AppCompatActivity {
 
                         for(int i=0;i<Sublist.size();i++){
                             ChannelClass channel = Sublist.get(i);
-                            SubAlllist.set(channel.channelId - 1, channel);
+                            for(int j=0; j<SubAlllist.size();j++) {
+                                ChannelClass channel1 = SubAlllist.get(j);
+                                if(channel.getChannelId()==channel1.getChannelId()) {
+                                    SubAlllist.set(j, channel);
+                                }
+                            }
                         }
                         SubscribeAllActivity.this.runOnUiThread(new Runnable() {
                             @Override
