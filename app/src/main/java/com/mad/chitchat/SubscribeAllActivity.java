@@ -22,7 +22,7 @@ import okhttp3.Response;
 
 public class SubscribeAllActivity extends AppCompatActivity {
     ArrayList<ChannelClass> Sublist;//Subscribed channel
-    ArrayList<ChannelClass> SubAlllist;//All Subscribed channel
+    static ArrayList<ChannelClass> SubAlllist;//All Subscribed channel
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

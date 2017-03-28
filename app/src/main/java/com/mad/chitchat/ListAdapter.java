@@ -70,7 +70,7 @@ public class ListAdapter extends ArrayAdapter<ChannelClass> {
             public void onClick(View view) {
                 if(object.isFlagButton()){
                     btn_view.setText("View");
-                    object.setFlagButton(false);
+                    SubscribeAllActivity.SubAlllist.get(object.getChannelId()).setFlagButton(false);
                     SharedPreference sp = new SharedPreference();
                     String token = sp.loadToken(mContext);
                     OkHttpClient client = new OkHttpClient();
@@ -116,6 +116,7 @@ public class ListAdapter extends ArrayAdapter<ChannelClass> {
 
 
                 }else{
+
                     Intent intent = new Intent(mContext,ChatActivity.class);
                     intent.putExtra("Channel id",object.getChannelId());
                     intent.putExtra("Email",object.getEmail());
