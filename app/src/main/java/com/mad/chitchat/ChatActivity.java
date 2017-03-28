@@ -21,19 +21,19 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.my_menu_chat, menu);
+        /*MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.my_menu_chat, menu);*/
         return true;
 
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_logout) {
+      /*  if (item.getItemId() == R.id.action_logout) {
 
         }else if(item.getItemId() == R.id.action_refresh){
 
-        }
+        }*/
         return true;
     }
 }
